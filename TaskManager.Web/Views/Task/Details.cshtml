@@ -1,0 +1,305 @@
+@model TaskManager.Web.DTOs.TaskDto
+@using TaskManager.Web.Models
+@using TaskStatus = TaskManager.Web.Models.TaskStatus
+
+@{
+    ViewData["Title"] = "Detalhes da Tarefa";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">
+                        <i class="fas fa-tasks me-2"></i>
+                        Detalhes da Tarefa
+                    </h2>
+                    <div class="btn-group" role="group">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit me-1"></i>
+                            Editar
+                        </a>
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="fas fa-trash me-1"></i>
+                            Excluir
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <h3 class="text-primary">@Model.Title</h3>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="fw-bold text-muted">Status:</label>
+                                <span class="badge @GetStatusBadgeClass(Model.Status) ms-2">
+                                    @GetStatusText(Model.Status)
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="fw-bold text-muted">Prioridade:</label>
+                                <span class="badge @GetPriorityBadgeClass(Model.Priority) ms-2">
+                                    @GetPriorityText(Model.Priority)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="fw-bold text-muted">Descrição:</label>
+                                <div class="border rounded p-3 bg-light mt-2">
+                                    @Model.Description
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            @if (Model.DueDate.HasValue)
+                            {
+                                <div class="mb-3">
+                                    <label class="fw-bold text-muted">Data de Vencimento:</label>
+                                    <div class="mt-1">
+                                        <i class="fas fa-calendar-alt me-1"></i>
+                                        <span class="@(Model.IsOverdue ? "text-danger fw-bold" : Model.IsDueSoon ? "text-warning fw-bold" : "")">
+                                            @Model.DueDate.Value.ToString("dd/MM/yyyy HH:mm")
+                                        </span>
+                                        @if (Model.IsOverdue)
+                                        {
+                                            <span class="badge bg-danger ms-2">Atrasada</span>
+                                        }
+                                        else if (Model.IsDueSoon)
+                                        {
+                                            <span class="badge bg-warning ms-2">Vence em breve</span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            @if (!string.IsNullOrEmpty(Model.CategoryName))
+                            {
+                                <div class="mb-3">
+                                    <label class="fw-bold text-muted">Categoria:</label>
+                                    <div class="mt-1">
+                                        <i class="fas fa-folder me-1"></i>
+                                        <span class="badge" style="background-color: @(Model.CategoryColor ?? "#6c757d")">
+                                            @Model.CategoryName
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="fw-bold text-muted">Criado por:</label>
+                                <div class="mt-1">
+                                    <i class="fas fa-user me-1"></i>
+                                    @Model.CreatedByUserName
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @if (!string.IsNullOrEmpty(Model.AssignedToUserName))
+                            {
+                                <div class="mb-3">
+                                    <label class="fw-bold text-muted">Atribuído para:</label>
+                                    <div class="mt-1">
+                                        <i class="fas fa-user-tag me-1"></i>
+                                        @Model.AssignedToUserName
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="fw-bold text-muted">Criada em:</label>
+                                <div class="mt-1">
+                                    <i class="fas fa-clock me-1"></i>
+                                    @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            @if (Model.UpdatedAt.HasValue)
+                            {
+                                <div class="mb-3">
+                                    <label class="fw-bold text-muted">Atualizada em:</label>
+                                    <div class="mt-1">
+                                        <i class="fas fa-edit me-1"></i>
+                                        @Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-4">
+                            @if (Model.CompletedAt.HasValue)
+                            {
+                                <div class="mb-3">
+                                    <label class="fw-bold text-muted">Concluída em:</label>
+                                    <div class="mt-1">
+                                        <i class="fas fa-check-circle me-1"></i>
+                                        @Model.CompletedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            Voltar para Lista
+                        </a>
+
+                        @if (Model.Status != TaskStatus.Completed)
+                        {
+                            <form asp-action="MarkAsCompleted" asp-route-id="@Model.Id" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-success" onclick="return confirm('Marcar esta tarefa como concluída?')">
+                                    <i class="fas fa-check me-1"></i>
+                                    Marcar como Concluída
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-comments me-2"></i>
+                        Comentários
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Comments != null && ((IEnumerable<dynamic>)ViewBag.Comments).Any())
+                    {
+                        <div class="comments-list" style="max-height: 400px; overflow-y: auto;">
+                            @foreach (var comment in (IEnumerable<dynamic>)ViewBag.Comments)
+                            {
+                                <div class="comment-item mb-3 p-2 bg-light rounded">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <strong class="text-primary">@comment.UserName</strong>
+                                        <small class="text-muted">@comment.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                                    </div>
+                                    <div class="mt-1">@comment.Content</div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">Nenhum comentário ainda.</p>
+                    }
+
+                    <form asp-action="AddComment" asp-route-id="@Model.Id" method="post" class="mt-3">
+                        @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            <textarea name="content" class="form-control" rows="3" placeholder="Adicionar um comentário..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm w-100">
+                            <i class="fas fa-paper-plane me-1"></i>
+                            Adicionar Comentário
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir a tarefa <strong>"@Model.Title"</strong>?</p>
+                <p class="text-danger">Esta ação não pode ser desfeita.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>
+                        Excluir
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetStatusBadgeClass(TaskStatus status)
+    {
+        return status switch
+        {
+            TaskStatus.Pending => "bg-warning text-dark",
+            TaskStatus.InProgress => "bg-info",
+            TaskStatus.Completed => "bg-success",
+            TaskStatus.Cancelled => "bg-secondary",
+            _ => "bg-secondary"
+        };
+    }
+
+    string GetStatusText(TaskStatus status)
+    {
+        return status switch
+        {
+            TaskStatus.Pending => "Pendente",
+            TaskStatus.InProgress => "Em Progresso",
+            TaskStatus.Completed => "Concluída",
+            TaskStatus.Cancelled => "Cancelada",
+            _ => "Desconhecido"
+        };
+    }
+
+    string GetPriorityBadgeClass(TaskPriority priority)
+    {
+        return priority switch
+        {
+            TaskPriority.Low => "bg-success",
+            TaskPriority.Medium => "bg-warning text-dark",
+            TaskPriority.High => "bg-danger",
+            TaskPriority.Critical => "bg-dark",
+            _ => "bg-secondary"
+        };
+    }
+
+    string GetPriorityText(TaskPriority priority)
+    {
+        return priority switch
+        {
+            TaskPriority.Low => "Baixa",
+            TaskPriority.Medium => "Média",
+            TaskPriority.High => "Alta",
+            TaskPriority.Critical => "Crítica",
+            _ => "Desconhecida"
+        };
+    }
+}

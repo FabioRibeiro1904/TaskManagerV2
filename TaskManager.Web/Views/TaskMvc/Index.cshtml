@@ -1,0 +1,211 @@
+@model IEnumerable<TaskDto>
+@{
+    ViewData["Title"] = "Tarefas";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-list-check me-2 text-primary"></i>Tarefas</h1>
+            <div>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Nova Tarefa
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-filter me-2"></i>Filtros
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="get" asp-action="Index">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <label class="form-label">Status</label>
+                            <select name="Status" class="form-select">
+                                <option value="">Todos</option>
+                                <option value="0">Pendente</option>
+                                <option value="1">Em Progresso</option>
+                                <option value="2">Concluída</option>
+                                <option value="3">Cancelada</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label class="form-label">Prioridade</label>
+                            <select name="Priority" class="form-select">
+                                <option value="">Todas</option>
+                                <option value="0">Baixa</option>
+                                <option value="1">Média</option>
+                                <option value="2">Alta</option>
+                                <option value="3">Crítica</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Buscar</label>
+                            <input type="text" name="SearchTerm" class="form-control" placeholder="Digite para buscar..." />
+                        </div>
+                        <div class="col-md-2 mb-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-search me-1"></i>Buscar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                @if (Model?.Any() == true)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Status</th>
+                                    <th>Prioridade</th>
+                                    <th>Data de Vencimento</th>
+                                    <th>Criado por</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var task in Model)
+                                {
+                                    <tr class="@(task.IsOverdue ? "table-danger" : task.IsDueSoon ? "table-warning" : "")">
+                                        <td>
+                                            <div>
+                                                <strong>@task.Title</strong>
+                                                @if (!string.IsNullOrEmpty(task.Description))
+                                                {
+                                                    <br><small class="text-muted">@(task.Description.Length > 50 ? task.Description.Substring(0, 50) + "..." : task.Description)</small>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @switch (task.Status)
+                                            {
+                                                case TaskManager.Web.Models.TaskStatus.Pending:
+                                                    <span class="badge bg-secondary">
+                                                        <i class="fas fa-clock me-1"></i>Pendente
+                                                    </span>
+                                                    break;
+                                                case TaskManager.Web.Models.TaskStatus.InProgress:
+                                                    <span class="badge bg-info">
+                                                        <i class="fas fa-spinner me-1"></i>Em Progresso
+                                                    </span>
+                                                    break;
+                                                case TaskManager.Web.Models.TaskStatus.Completed:
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-check-circle me-1"></i>Concluída
+                                                    </span>
+                                                    break;
+                                                case TaskManager.Web.Models.TaskStatus.Cancelled:
+                                                    <span class="badge bg-danger">
+                                                        <i class="fas fa-times-circle me-1"></i>Cancelada
+                                                    </span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td>
+                                            @switch (task.Priority)
+                                            {
+                                                case TaskManager.Web.Models.TaskPriority.Low:
+                                                    <span class="badge bg-light text-dark">
+                                                        <i class="fas fa-arrow-down me-1"></i>Baixa
+                                                    </span>
+                                                    break;
+                                                case TaskManager.Web.Models.TaskPriority.Medium:
+                                                    <span class="badge bg-warning">
+                                                        <i class="fas fa-minus me-1"></i>Média
+                                                    </span>
+                                                    break;
+                                                case TaskManager.Web.Models.TaskPriority.High:
+                                                    <span class="badge bg-danger">
+                                                        <i class="fas fa-arrow-up me-1"></i>Alta
+                                                    </span>
+                                                    break;
+                                                case TaskManager.Web.Models.TaskPriority.Critical:
+                                                    <span class="badge bg-dark">
+                                                        <i class="fas fa-exclamation-triangle me-1"></i>Crítica
+                                                    </span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (task.DueDate.HasValue)
+                                            {
+                                                <span class="@(task.IsOverdue ? "text-danger" : task.IsDueSoon ? "text-warning" : "")">
+                                                    @task.DueDate.Value.ToString("dd/MM/yyyy")
+                                                </span>
+                                                @if (task.IsOverdue)
+                                                {
+                                                    <br><small class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i>Vencida</small>
+                                                }
+                                                else if (task.IsDueSoon)
+                                                {
+                                                    <br><small class="text-warning"><i class="fas fa-clock me-1"></i>Vence em breve</small>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </td>
+                                        <td>@task.CreatedByUserName</td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="Details" asp-route-id="@task.Id" class="btn btn-outline-primary btn-sm" title="Ver detalhes">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-outline-secondary btn-sm" title="Editar">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                @if (task.Status != TaskManager.Web.Models.TaskStatus.Completed)
+                                                {
+                                                    <form asp-action="Complete" asp-route-id="@task.Id" method="post" class="d-inline">
+                                                        <button type="submit" class="btn btn-outline-success btn-sm" title="Marcar como concluída" onclick="return confirm('Marcar esta tarefa como concluída?')">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                    </form>
+                                                }
+                                                <form asp-action="Delete" asp-route-id="@task.Id" method="post" class="d-inline">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir esta tarefa?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Nenhuma tarefa encontrada</h5>
+                        <p class="text-muted">Que tal criar sua primeira tarefa?</p>
+                        <a asp-action="Create" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Criar Tarefa
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

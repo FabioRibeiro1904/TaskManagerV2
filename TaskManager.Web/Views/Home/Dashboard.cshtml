@@ -1,0 +1,187 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-chart-line me-2 text-primary"></i>Dashboard</h1>
+            <div>
+                                        <a asp-controller="Task" asp-action="Index" class="btn btn-primary btn-lg">
+                            <i class="fas fa-tasks me-2"></i>Gerenciar Tarefas
+                        </a>
+                        <a asp-controller="Task" asp-action="Create" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-plus me-2"></i>Nova Tarefa
+                        </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title mb-1">Total de Tarefas</h6>
+                        <h2 class="mb-0">--</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-tasks fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title mb-1">Pendentes</h6>
+                        <h2 class="mb-0">--</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-clock fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title mb-1">Em Progresso</h6>
+                        <h2 class="mb-0">--</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-spinner fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title mb-1">Concluídas</h6>
+                        <h2 class="mb-0">--</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list-check me-2"></i>Tarefas Recentes
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Status</th>
+                                <th>Prioridade</th>
+                                <th>Data de Vencimento</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Carregando tarefas...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center mt-3">
+                    <a asp-controller="TaskMvc" asp-action="Index" class="btn btn-outline-primary">
+                        <i class="fas fa-eye me-1"></i>Ver Todas as Tarefas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Estatísticas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted">Taxa de Conclusão</small>
+                    <div class="progress mt-1">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted">Tarefas Vencidas</small>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-danger">--</span>
+                        <small class="text-muted">tarefas</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted">Tarefas para Hoje</small>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-warning">--</span>
+                        <small class="text-muted">tarefas</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted">Prioridade Alta</small>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-danger">--</span>
+                        <small class="text-muted">tarefas</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Dicas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info mb-0">
+                    <small>
+                        <i class="fas fa-info-circle me-1"></i>
+                        <strong>Dica:</strong> Use as prioridades para organizar melhor suas tarefas. Tarefas com prioridade alta aparecem primeiro na lista.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // TODO: Implementar carregamento dinâmico das estatísticas via AJAX
+        $(document).ready(function() {
+            // Aqui você pode implementar chamadas AJAX para carregar dados em tempo real
+            console.log('Dashboard carregado');
+        });
+    </script>
+}

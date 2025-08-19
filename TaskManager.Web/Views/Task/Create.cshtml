@@ -1,0 +1,163 @@
+@model TaskManager.Web.DTOs.TaskCreateDto
+@using TaskManager.Web.Models
+
+@{
+    ViewData["Title"] = "Nova Tarefa";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Nova Tarefa
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">
+                                <i class="fas fa-heading me-1"></i>
+                                Título *
+                            </label>
+                            <input asp-for="Title" class="form-control" placeholder="Digite o título da tarefa" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">
+                                <i class="fas fa-align-left me-1"></i>
+                                Descrição
+                            </label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Digite uma descrição detalhada da tarefa"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Priority" class="form-label">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                        Prioridade
+                                    </label>
+                                    <select asp-for="Priority" class="form-select">
+                                        <option value="@((int)TaskPriority.Low)">Baixa</option>
+                                        <option value="@((int)TaskPriority.Medium)" selected>Média</option>
+                                        <option value="@((int)TaskPriority.High)">Alta</option>
+                                        <option value="@((int)TaskPriority.Critical)">Crítica</option>
+                                    </select>
+                                    <span asp-validation-for="Priority" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="DueDate" class="form-label">
+                                        <i class="fas fa-calendar-alt me-1"></i>
+                                        Data de Vencimento
+                                    </label>
+                                    <input asp-for="DueDate" type="datetime-local" class="form-control" />
+                                    <span asp-validation-for="DueDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="CategoryId" class="form-label">
+                                        <i class="fas fa-folder me-1"></i>
+                                        Categoria
+                                    </label>
+                                    <select asp-for="CategoryId" class="form-select">
+                                        <option value="">Selecionar categoria</option>
+                                        @if (ViewBag.Categories != null)
+                                        {
+                                            @foreach (var category in (IEnumerable<dynamic>)ViewBag.Categories)
+                                            {
+                                                <option value="@category.Id">@category.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="AssignedToUserId" class="form-label">
+                                        <i class="fas fa-user me-1"></i>
+                                        Atribuir para
+                                    </label>
+                                    <select asp-for="AssignedToUserId" class="form-select">
+                                        <option value="">Não atribuído</option>
+                                        @* Lista de usuários será carregada dinamicamente se necessário *@
+                                    </select>
+                                    <span asp-validation-for="AssignedToUserId" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>
+                                Voltar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>
+                                Criar Tarefa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        // Configurar data mínima para hoje
+        document.addEventListener('DOMContentLoaded', function() {
+            const dueDateInput = document.querySelector('input[name="DueDate"]');
+            if (dueDateInput) {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                
+                const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+                dueDateInput.setAttribute('min', minDateTime);
+            }
+        });
+
+        // Adicionar classes de estilo baseadas na prioridade
+        document.querySelector('select[name="Priority"]').addEventListener('change', function() {
+            const select = this;
+            select.className = 'form-select';
+            
+            switch(this.value) {
+                case '1': // Low
+                    select.classList.add('border-success');
+                    break;
+                case '2': // Medium
+                    select.classList.add('border-warning');
+                    break;
+                case '3': // High
+                    select.classList.add('border-danger');
+                    break;
+                case '4': // Critical
+                    select.classList.add('border-danger', 'bg-danger', 'text-white');
+                    break;
+            }
+        });
+    </script>
+}

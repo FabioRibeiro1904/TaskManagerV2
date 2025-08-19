@@ -1,0 +1,184 @@
+### TaskManager API - Testes JWT Authentication
+
+### Variáveis
+@baseUrl = https://localhost:7169
+@token = 
+
+### 1. Registrar um novo usuário
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "João Silva",
+  "email": "joao@teste.com",
+  "password": "MinhaSenh@123",
+  "confirmPassword": "MinhaSenh@123"
+}
+
+### 2. Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@taskmanager.com",
+  "password": "Admin123!"
+}
+
+### 3. Obter informações do usuário logado
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{token}}
+
+### 4. Refresh Token
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: application/json
+
+{
+  "token": "{{token}}",
+  "refreshToken": "seu_refresh_token_aqui"
+}
+
+### 5. Logout
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{token}}
+
+### 6. Validar Token
+GET {{baseUrl}}/api/auth/validate
+Authorization: Bearer {{token}}
+
+### 7. Verificar se email está disponível
+GET {{baseUrl}}/api/auth/check-email/teste@email.com
+
+### 8. Alterar senha
+POST {{baseUrl}}/api/auth/change-password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "currentPassword": "Admin123!",
+  "newPassword": "NovaSenh@456",
+  "confirmNewPassword": "NovaSenh@456"
+}
+
+### 9. Listar tarefas
+GET {{baseUrl}}/api/tasks
+Authorization: Bearer {{token}}
+
+### 10. Listar tarefas com filtros
+GET {{baseUrl}}/api/tasks?status=1&priority=3&page=1&pageSize=10
+Authorization: Bearer {{token}}
+
+### 11. Obter tarefa por ID
+GET {{baseUrl}}/api/tasks/1
+Authorization: Bearer {{token}}
+
+### 12. Criar nova tarefa
+POST {{baseUrl}}/api/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Implementar autenticação JWT",
+  "description": "Desenvolver sistema completo de autenticação com JWT",
+  "priority": 3,
+  "dueDate": "2024-12-31T23:59:59",
+  "categoryId": 1
+}
+
+### 13. Atualizar tarefa
+PUT {{baseUrl}}/api/tasks/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "id": 1,
+  "title": "Implementar autenticação JWT - Atualizada",
+  "description": "Desenvolver sistema completo de autenticação com JWT - versão atualizada",
+  "priority": 2,
+  "status": 2,
+  "dueDate": "2024-12-31T23:59:59",
+  "categoryId": 1
+}
+
+### 14. Completar tarefa
+POST {{baseUrl}}/api/tasks/1/complete
+Authorization: Bearer {{token}}
+
+### 15. Obter estatísticas de tarefas
+GET {{baseUrl}}/api/tasks/stats
+Authorization: Bearer {{token}}
+
+### 16. Obter comentários de uma tarefa
+GET {{baseUrl}}/api/tasks/1/comments
+Authorization: Bearer {{token}}
+
+### 17. Adicionar comentário a uma tarefa
+POST {{baseUrl}}/api/tasks/1/comments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "content": "Progresso: Implementação 50% concluída"
+}
+
+### 18. Excluir comentário
+DELETE {{baseUrl}}/api/tasks/comments/1
+Authorization: Bearer {{token}}
+
+### 19. Excluir tarefa
+DELETE {{baseUrl}}/api/tasks/1
+Authorization: Bearer {{token}}
+
+### 20. Listar categorias
+GET {{baseUrl}}/api/categories
+Authorization: Bearer {{token}}
+
+### 21. Criar categoria (Admin/Manager)
+POST {{baseUrl}}/api/categories
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Urgente",
+  "description": "Tarefas que precisam ser feitas com urgência",
+  "color": "#ff4444"
+}
+
+### 22. Excluir categoria (Admin)
+DELETE {{baseUrl}}/api/categories/1
+Authorization: Bearer {{token}}
+
+### 23. Listar usuários
+GET {{baseUrl}}/api/users
+Authorization: Bearer {{token}}
+
+### 24. Obter usuário por ID
+GET {{baseUrl}}/api/users/1
+Authorization: Bearer {{token}}
+
+### 25. Atualizar role de usuário (Admin)
+PUT {{baseUrl}}/api/users/2/role
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "role": 2
+}
+
+### 26. Desativar usuário (Admin)
+DELETE {{baseUrl}}/api/users/2
+Authorization: Bearer {{token}}
+
+### 27. Ativar usuário (Admin)
+POST {{baseUrl}}/api/users/2/activate
+Authorization: Bearer {{token}}
+
+### 28. Estatísticas de usuários (Admin/Manager)
+GET {{baseUrl}}/api/users/stats
+Authorization: Bearer {{token}}
+
+### 29. Testar acesso não autorizado (sem token)
+GET {{baseUrl}}/api/tasks
+
+### 30. Testar token inválido
+GET {{baseUrl}}/api/tasks
+Authorization: Bearer token_invalido_aqui
