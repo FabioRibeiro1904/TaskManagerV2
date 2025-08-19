@@ -46,9 +46,9 @@ dotnet run
 
 ### Acesso ao Sistema
 
-- **Interface Web**: http://localhost:5000
-- **API**: http://localhost:5000/api
-- **Documentação Swagger**: http://localhost:5000/swagger
+- **Interface Web**: https://localhost:7043 ou http://localhost:5054
+- **API**: https://localhost:7043/api ou http://localhost:5054/api
+- **Documentação Swagger**: https://localhost:7043/swagger ou http://localhost:5054/swagger
 
 ### Credenciais de Acesso
 
